@@ -1252,40 +1252,58 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
           <h3>Code Snippet Placeholder</h3>
           <div class="code-panel">
             <div class="code-panel-header">Firebase Firestore submission + MediaPipe angle logic</div>
-            <pre><code>const FIREBASE_COLLECTION = 'pushupLeaderboard';
-const CHALLENGE_SECONDS = 60;
-const DOWN_ANGLE = 95;
-const UP_ANGLE = 155;
-const MIN_REP_MS = 450;
-const REP_COOLDOWN_MS = 650;
-const MIN_VISIBILITY = 0.45;
-
-let isTracking = false;
-let currentReps = 0;
-let pushupStage = 'up';
-let camera = null;
-let pose = null;
-let downStartTime = 0;
-let lastRepTime = 0;
-let lowestAngle = 180;
-let challengeActive = false;
-let challengeSecondsLeft = CHALLENGE_SECONDS;
-let challengeInterval = null;
-let leaderboardDb = null;
-let leaderboardUnsubscribe = null;
+            <pre><code>async function submitLeaderboardScore(playerName, reps) {
+  await db.collection("leaderboard").add({
+    name: playerName,
+    score: reps,
+    challenge: "1-Minute Push-Up Challenge",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
 
 function calculateAngle(a, b, c) {
-    const ab = { x: a.x - b.x, y: a.y - b.y };
-    const cb = { x: c.x - b.x, y: c.y - b.y };
-    const dot = ab.x * cb.x + ab.y * cb.y;
-    const magAB = Math.hypot(ab.x, ab.y);
-    const magCB = Math.hypot(cb.x, cb.y);
+  const ab = { x: a.x - b.x, y: a.y - b.y };
+  const cb = { x: c.x - b.x, y: c.y - b.y };
 
-    if (!magAB || !magCB) return 180;
+  const dotProduct = ab.x * cb.x + ab.y * cb.y;
+  const magnitudeAB = Math.sqrt(ab.x ** 2 + ab.y ** 2);
+  const magnitudeCB = Math.sqrt(cb.x ** 2 + cb.y ** 2);
 
-    const cosine = Math.max(-1, Math.min(1, dot / (magAB * magCB)));
-    return Math.acos(cosine) * (180 / Math.PI);
+  return Math.acos(dotProduct / (magnitudeAB * magnitudeCB)) * (180 / Math.PI);
 }
+
+function checkPushUpRep(shoulder, elbow, wrist) {
+  const elbowAngle = calculateAngle(shoulder, elbow, wrist);
+
+  if (elbowAngle &lt; 80) {
+    pushUpStage = "down";
+  }
+
+  if (elbowAngle &gt; 160 &amp;&amp; pushUpStage === "down") {
+    repCount++;
+    pushUpStage = "up";
+  }
+}</code></pre>
+          </div>
+        </article>
+
+        <div class="compare-grid">
+          <article class="compare-card">
+            <div class="compare-visual">Beta Version Screenshot Placeholder</div>
+            <h3>Beta Version: High-bug layout</h3>
+            <p>Placeholder block for visual evidence of the unstable beta interface, including duplicate/triplicate rep counting and false positives.</p>
+          </article>
+
+          <article class="compare-card">
+            <div class="compare-visual">Final Version Screenshot Placeholder</div>
+            <h3>Final Version: Polished UI with Global Firebase Leaderboard</h3>
+            <p>Placeholder block for visual evidence of the refined final interface with stable AI tracking and real-time cloud leaderboard synchronization.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dp-section">
       <h3 class="dp-section-title">Short Critical Reflection</h3>
 
       <div class="reflection-grid">
@@ -1307,4 +1325,3 @@ function calculateAngle(a, b, c) {
     </section>
   </div>
 </section>
-
