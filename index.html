@@ -861,3 +861,468 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
+<style>
+  :root {
+    --bg: #111;
+    --card: #1A1A1A;
+    --card-soft: #202020;
+    --accent: #E53935;
+    --text: #FFF;
+    --muted: #B8B8B8;
+    --line: rgba(255, 255, 255, 0.1);
+  }
+
+  .development-process {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 80px 6%;
+  }
+
+  .development-process * {
+    box-sizing: border-box;
+  }
+
+  .dp-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .dp-header {
+    margin-bottom: 48px;
+  }
+
+  .dp-kicker {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .dp-header h2 {
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
+    line-height: 1;
+    margin: 0 0 18px;
+  }
+
+  .dp-header p {
+    color: var(--muted);
+    max-width: 780px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .dp-section {
+    margin-top: 64px;
+  }
+
+  .dp-section-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    margin: 0 0 28px;
+  }
+
+  .dp-section-title::before {
+    content: "";
+    width: 6px;
+    height: 34px;
+    background: var(--accent);
+    border-radius: 99px;
+  }
+
+  .timeline-grid,
+  .video-grid,
+  .evidence-grid,
+  .reflection-grid {
+    display: grid;
+    gap: 22px;
+  }
+
+  .timeline-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .timeline-card,
+  .video-card,
+  .tool-card,
+  .compare-card,
+  .reflection-card {
+    background: linear-gradient(180deg, var(--card), #151515);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 26px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+  }
+
+  .timeline-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .timeline-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--accent);
+  }
+
+  .timeline-label {
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .timeline-card h3,
+  .video-card h3,
+  .tool-card h3,
+  .compare-card h3,
+  .reflection-card h3 {
+    margin: 0 0 14px;
+    font-size: 1.25rem;
+  }
+
+  .timeline-card p,
+  .video-card p,
+  .tool-card p,
+  .compare-card p,
+  .reflection-card p {
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .video-card {
+    display: grid;
+    grid-template-columns: minmax(280px, 44%) 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .video-placeholder {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #0B0B0B;
+    border: 1px solid var(--line);
+    aspect-ratio: 16 / 9;
+  }
+
+  .video-placeholder iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .video-content {
+    display: grid;
+    gap: 18px;
+  }
+
+  .annotation-box {
+    background: var(--card-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 18px;
+  }
+
+  .annotation-box strong {
+    display: block;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tools-list li {
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 0.92rem;
+  }
+
+  .code-panel {
+    background: #080808;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .code-panel-header {
+    background: var(--card-soft);
+    color: var(--muted);
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  pre {
+    margin: 0;
+    padding: 22px;
+    overflow-x: auto;
+  }
+
+  code {
+    color: #F4F4F4;
+    font-family: Consolas, Monaco, "Courier New", monospace;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+
+  .compare-visual {
+    min-height: 180px;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.28);
+    background:
+      linear-gradient(135deg, rgba(229, 57, 53, 0.18), transparent),
+      #0C0C0C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    text-align: center;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .reflection-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 900px) {
+    .timeline-grid,
+    .reflection-grid,
+    .compare-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .video-card {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .development-process {
+      padding: 56px 5%;
+    }
+
+    .timeline-card,
+    .video-card,
+    .tool-card,
+    .compare-card,
+    .reflection-card {
+      padding: 20px;
+    }
+  }
+</style>
+
+<section class="development-process" id="development-process">
+  <div class="dp-container">
+    <header class="dp-header">
+      <div class="dp-kicker">Criterion C Summative Assessment</div>
+      <h2>Development Process</h2>
+      <p>Muscle Training Atlas evolved from a static exercise guide into an AI-powered, real-time fitness platform using HTML, CSS, JavaScript, MediaPipe, and Firebase.</p>
+    </header>
+
+    <section class="dp-section">
+      <h3 class="dp-section-title">Version Timeline</h3>
+
+      <div class="timeline-grid">
+        <article class="timeline-card">
+          <div class="timeline-label">Alpha Version</div>
+          <h3>Alpha Version</h3>
+          <p>Originated as an IB MYP Personal Project. Included a static interactive SVG muscle map with 30+ exercises categorized by gym/office environments. Lacked dynamic code or advanced functionality.</p>
+        </article>
+
+        <article class="timeline-card">
+          <div class="timeline-label">Beta Version</div>
+          <h3>Beta Version</h3>
+          <p>Added an AI-powered real-time push-up tracker using MediaPipe. However, it was highly unstable, containing bugs like duplicate/triplicate rep counting and false positives.</p>
+        </article>
+
+        <article class="timeline-card">
+          <div class="timeline-label">Final Version</div>
+          <h3>Final Version</h3>
+          <p>Optimized the user interface, fixed the MediaPipe counting algorithms, and integrated a backend global cloud database via Firebase to support a "1-Minute Challenge" Leaderboard that syncs scores across multiple devices in real-time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="dp-section">
+      <h3 class="dp-section-title">Feedback Evidence</h3>
+
+      <div class="video-grid">
+        <article class="video-card">
+          <div class="video-placeholder">
+            <iframe src="https://www.youtube.com/embed/awSGcKoPTNA" title="Alpha Stage - Sponsor Interview" allowfullscreen></iframe>
+          </div>
+
+          <div class="video-content">
+            <h3>Video 1: Alpha Stage - Sponsor Interview (Sponsor: Tair)</h3>
+            <div class="annotation-box">
+              <strong>Summary</strong>
+              <p>Tair inquired about managing weight loads (0:14) and requested content tailored for female audiences (0:40). He concluded by asking for 3 future improvements (1:48).</p>
+            </div>
+            <div class="annotation-box">
+              <strong>Design Response</strong>
+              <p>I guided the user to listen to body limits for loads, planned a universal-to-female model transition, and decided to implement AI camera tracking based on his push for future innovation.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card">
+          <div class="video-placeholder">
+            <iframe src="https://www.youtube.com/embed/zznOI-YZcWU" title="Beta Stage - User Testing & Functionality" allowfullscreen></iframe>
+          </div>
+
+          <div class="video-content">
+            <h3>Video 2: Beta Stage - User Testing & Functionality (Sponsor: Tair, Users: Alim & Alisher)</h3>
+            <div class="annotation-box">
+              <strong>Summary</strong>
+              <p>Users tested the system layout. Tair faced initial camera angle alignment issues before successfully initiating a series of tracked push-ups (0:16-1:10). Alisher tried to "break" the app with incorrect forms, but the MediaPipe tracker proved robust, filtering bad reps (1:21). Alisher also asked about squat tracking (1:37).</p>
+            </div>
+            <div class="annotation-box">
+              <strong>Technical Explanation Included on Page</strong>
+              <p>The developer explains that the application uses the MediaPipe library to calculate full-body landmark coordinates and analyze joint angles using cosine logic (1:53-2:06).</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="video-card">
+          <div class="video-placeholder">
+            <iframe src="https://www.youtube.com/embed/k8gAwz_S6o0" title="Beta Stage - User Feedback & Reflection" allowfullscreen></iframe>
+          </div>
+
+          <div class="video-content">
+            <h3>Video 3: Beta Stage - User Feedback & Reflection (Sponsor: Tair, Users: Alim & Alisher)</h3>
+            <div class="annotation-box">
+              <strong>Summary</strong>
+              <p>Alim and Alisher strongly critiqued the absence of a female character model, calling it a major UX limitation (0:12-0:45, 0:56-1:01). Alisher suggested adding character customizability and apparel options (1:02). Tair praised the core AI-camera counting function as highly innovative and promising (0:47-0:52).</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="dp-section">
+      <h3 class="dp-section-title">Evidence of Development</h3>
+
+      <div class="evidence-grid">
+        <article class="tool-card">
+          <h3>Tools Used</h3>
+          <ul class="tools-list">
+            <li>Visual Studio Code</li>
+            <li>GitHub Pages</li>
+            <li>MediaPipe API</li>
+            <li>Firebase Firestore Realtime Database</li>
+          </ul>
+        </article>
+
+        <article class="tool-card">
+          <h3>Code Snippet Placeholder</h3>
+          <div class="code-panel">
+            <div class="code-panel-header">Firebase Firestore submission + MediaPipe angle logic</div>
+            <pre><code>async function submitLeaderboardScore(playerName, reps) {
+  await db.collection("leaderboard").add({
+    name: playerName,
+    score: reps,
+    challenge: "1-Minute Push-Up Challenge",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function calculateAngle(a, b, c) {
+  const ab = { x: a.x - b.x, y: a.y - b.y };
+  const cb = { x: c.x - b.x, y: c.y - b.y };
+
+  const dotProduct = ab.x * cb.x + ab.y * cb.y;
+  const magnitudeAB = Math.sqrt(ab.x ** 2 + ab.y ** 2);
+  const magnitudeCB = Math.sqrt(cb.x ** 2 + cb.y ** 2);
+
+  return Math.acos(dotProduct / (magnitudeAB * magnitudeCB)) * (180 / Math.PI);
+}
+
+function checkPushUpRep(shoulder, elbow, wrist) {
+  const elbowAngle = calculateAngle(shoulder, elbow, wrist);
+
+  if (elbowAngle &lt; 80) {
+    pushUpStage = "down";
+  }
+
+  if (elbowAngle &gt; 160 &amp;&amp; pushUpStage === "down") {
+    repCount++;
+    pushUpStage = "up";
+  }
+}</code></pre>
+          </div>
+        </article>
+
+        <div class="compare-grid">
+          <article class="compare-card">
+            <div class="compare-visual">Beta Version Screenshot Placeholder</div>
+            <h3>Beta Version: High-bug layout</h3>
+            <p>Placeholder block for visual evidence of the unstable beta interface, including duplicate/triplicate rep counting and false positives.</p>
+          </article>
+
+          <article class="compare-card">
+            <div class="compare-visual">Final Version Screenshot Placeholder</div>
+            <h3>Final Version: Polished UI with Global Firebase Leaderboard</h3>
+            <p>Placeholder block for visual evidence of the refined final interface with stable AI tracking and real-time cloud leaderboard synchronization.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dp-section">
+      <h3 class="dp-section-title">Short Critical Reflection</h3>
+
+      <div class="reflection-grid">
+        <article class="reflection-card">
+          <h3>What improved the most from Alpha to Final?</h3>
+          <p>The transformation from a static informational guide into a highly interactive, stable, cloud-synchronized competitive platform.</p>
+        </article>
+
+        <article class="reflection-card">
+          <h3>What feedback was most useful?</h3>
+          <p>Tair's Alpha prompt regarding proper execution tracking, which catalyzed the integration of MediaPipe pose estimation.</p>
+        </article>
+
+        <article class="reflection-card">
+          <h3>What would you still improve?</h3>
+          <p>Implementing female character profiles, introducing clothing customization as requested by Alisher and Alim, and expanding the model to track squats and planks.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
+
