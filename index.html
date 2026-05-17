@@ -1252,38 +1252,41 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
           <h3>Code Snippet Placeholder</h3>
           <div class="code-panel">
             <div class="code-panel-header">Firebase Firestore submission + MediaPipe angle logic</div>
-            <pre><code>async function submitLeaderboardScore(playerName, reps) {
-  await db.collection("leaderboard").add({
-    name: playerName,
-    score: reps,
-    challenge: "1-Minute Push-Up Challenge",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-}
+            <pre><code>const FIREBASE_COLLECTION = 'pushupLeaderboard';
+const CHALLENGE_SECONDS = 60;
+const DOWN_ANGLE = 95;
+const UP_ANGLE = 155;
+const MIN_REP_MS = 450;
+const REP_COOLDOWN_MS = 650;
+const MIN_VISIBILITY = 0.45;
+
+let isTracking = false;
+let currentReps = 0;
+let pushupStage = 'up';
+let camera = null;
+let pose = null;
+let downStartTime = 0;
+let lastRepTime = 0;
+let lowestAngle = 180;
+let challengeActive = false;
+let challengeSecondsLeft = CHALLENGE_SECONDS;
+let challengeInterval = null;
+let leaderboardDb = null;
+let leaderboardUnsubscribe = null;
 
 function calculateAngle(a, b, c) {
-  const ab = { x: a.x - b.x, y: a.y - b.y };
-  const cb = { x: c.x - b.x, y: c.y - b.y };
+    const ab = { x: a.x - b.x, y: a.y - b.y };
+    const cb = { x: c.x - b.x, y: c.y - b.y };
+    const dot = ab.x * cb.x + ab.y * cb.y;
+    const magAB = Math.hypot(ab.x, ab.y);
+    const magCB = Math.hypot(cb.x, cb.y);
 
-  const dotProduct = ab.x * cb.x + ab.y * cb.y;
-  const magnitudeAB = Math.sqrt(ab.x ** 2 + ab.y ** 2);
-  const magnitudeCB = Math.sqrt(cb.x ** 2 + cb.y ** 2);
+    if (!magAB || !magCB) return 180;
 
-  return Math.acos(dotProduct / (magnitudeAB * magnitudeCB)) * (180 / Math.PI);
+    const cosine = Math.max(-1, Math.min(1, dot / (magAB * magCB)));
+    return Math.acos(cosine) * (180 / Math.PI);
 }
-
-function checkPushUpRep(shoulder, elbow, wrist) {
-  const elbowAngle = calculateAngle(shoulder, elbow, wrist);
-
-  if (elbowAngle &lt; 80) {
-    pushUpStage = "down";
-  }
-
-  if (elbowAngle &gt; 160 &amp;&amp; pushUpStage === "down") {
-    repCount++;
-    pushUpStage = "up";
-  }
-}</code></pre>
+</code></pre>
           </div>
         </article>
 
